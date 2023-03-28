@@ -5,6 +5,27 @@ const exphbs = require('express-handlebars')
 //request body parser
 app.use(express.urlencoded({ extended: true }))
 
+// 加入這段 code, 僅在非正式環境時, 使用 dotenv
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
+const mongoose = require('mongoose')
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+
+
+//取得資料庫連線狀態
+const db = mongoose.connection
+//連線異常
+db.on('error', () => {
+  console.log('mongodb error!')
+})
+// 連線成功
+db.once('open', () =>{
+  console.log('mongodb connected')
+})
+
 const port = 3000
 
 //定義要使用的樣版引擎
