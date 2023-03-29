@@ -29,12 +29,17 @@ db.once('open', () =>{
 })
 
 const port = 3000
+//載入Todo model
+const Todo = require('./models/todo')
 
 //設定靜態檔案路由，讓伺服器知道靜態檔案要去哪邊查找
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  res.render('index')
+  Todo.find() //取出Todo model所有資料
+    .lean() //把mongoose的model物件轉換為乾淨的JS資料陣列
+    .then(todos => res.render('index', { todos }))  //將資料傳給前端樣板
+    .catch(error => console.log(error)) //錯誤處理
 })
 
 app.listen(port, () => {
