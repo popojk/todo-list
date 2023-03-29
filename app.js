@@ -42,6 +42,17 @@ app.get('/', (req, res) => {
     .catch(error => console.log(error)) //錯誤處理
 })
 
+app.get('/todos/new', (req, res) => {
+  return res.render('new')
+})
+
+app.post('/todos', (req, res) => {
+  const name = req.body.name
+  return Todo.create({name})
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
+})
+
 app.listen(port, () => {
   console.log(`Server is listening on http://locallhost:${port}`)
 })
