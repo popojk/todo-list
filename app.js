@@ -1,13 +1,13 @@
 const express = require('express')
 const app = express()
 const exphbs = require('express-handlebars')
+//載入method-override
+const methodOverride = require('method-override')
 
 //request body parser
 app.use(express.urlencoded({ extended: true }))
 //定義要使用的樣版引擎
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
-//告訴express要使用的view engine 是 handlebar
-app.set('view engine', 'hbs')
 
 // 加入這段 code, 僅在非正式環境時, 使用 dotenv
 if (process.env.NODE_ENV !== 'production') {
@@ -31,9 +31,12 @@ db.once('open', () =>{
 const port = 3000
 //載入Todo model
 const Todo = require('./models/todo')
-
+//告訴express要使用的view engine 是 handlebar
+app.set('view engine', 'hbs')
 //設定靜態檔案路由，讓伺服器知道靜態檔案要去哪邊查找
 app.use(express.static('public'))
+
+app.use(methodOverride('_method'))
 
 app.get('/', (req, res) => {
   Todo.find() //取出Todo model所有資料
@@ -70,9 +73,9 @@ app.get('/todos/:id/edit', (req, res) => {
     .catch(error => console.log(error))
 })
 
-app.post('/todos/:id/edit', (req, res) => {
+app.put('/todos/:id', (req, res) => {
   const id = req.params.id
-  const {name, isDone} = req.body.name
+  const {name, isDone} = req.body
   return Todo.findById(id)
      .then(todo => {
        todo.name = name
@@ -83,7 +86,7 @@ app.post('/todos/:id/edit', (req, res) => {
      .catch(error => console.log(error))
 })
 
-app.post('/todos/:id/delete', (req, res) => {
+app.delete('/todos/:id', (req, res) => {
   const id = req.params.id
   return Todo.findById(id)
     .then(todo => todo.remove())
