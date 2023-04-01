@@ -1,4 +1,5 @@
 const express = require('express')
+const routes = require('./routes')
 const app = express()
 const exphbs = require('express-handlebars')
 //載入method-override
@@ -33,66 +34,12 @@ const port = 3000
 const Todo = require('./models/todo')
 //告訴express要使用的view engine 是 handlebar
 app.set('view engine', 'hbs')
-//設定靜態檔案路由，讓伺服器知道靜態檔案要去哪邊查找
-app.use(express.static('public'))
 
 app.use(methodOverride('_method'))
 
-app.get('/', (req, res) => {
-  Todo.find() //取出Todo model所有資料
-    .lean() //把mongoose的model物件轉換為乾淨的JS資料陣列
-    .sort({ _id: 'asc' })
-    .then(todos => res.render('index', { todos }))  //將資料傳給前端樣板
-    .catch(error => console.log(error)) //錯誤處理
-})
+app.use(routes)
 
-app.get('/todos/new', (req, res) => {
-  return res.render('new')
-})
-
-app.post('/todos', (req, res) => {
-  const name = req.body.name
-  return Todo.create({name})
-    .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
-})
-
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-     .lean()
-     .then((todo) => res.render('detail', { todo }))
-     .catch(error => console.log(error))
-})
-
-app.get('/todos/:id/edit', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .lean()
-    .then((todo) => res.render('edit', { todo }))
-    .catch(error => console.log(error))
-})
-
-app.put('/todos/:id', (req, res) => {
-  const id = req.params.id
-  const {name, isDone} = req.body
-  return Todo.findById(id)
-     .then(todo => {
-       todo.name = name
-       todo.isDone = isDone === 'on'
-       return todo.save()
-     })
-     .then(() => res.redirect(`/todos/${id}`))
-     .catch(error => console.log(error))
-})
-
-app.delete('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findById(id)
-    .then(todo => todo.remove())
-    .then(() => res.redirect('/'))
-    .catch(error => console.log(error))
-})
+const router = require('./routes')
 
 app.listen(port, () => {
   console.log(`Server is listening on http://locallhost:${port}`)
