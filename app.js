@@ -14,20 +14,8 @@ app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
-
-const mongoose = require('mongoose')
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-
-//取得資料庫連線狀態
-const db = mongoose.connection
-//連線異常
-db.on('error', () => {
-  console.log('mongodb error!')
-})
-// 連線成功
-db.once('open', () =>{
-  console.log('mongodb connected')
-})
+//只要連線有被執行就好不需要回傳值，所以不用設定變數
+require('./config/mongoose')
 
 const port = 3000
 //載入Todo model
