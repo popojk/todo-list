@@ -4,6 +4,7 @@ const app = express()
 const exphbs = require('express-handlebars')
 //載入method-override
 const methodOverride = require('method-override')
+const session = require('express-session')
 
 //request body parser
 app.use(express.urlencoded({ extended: true }))
@@ -23,8 +24,13 @@ const Todo = require('./models/todo')
 //告訴express要使用的view engine 是 handlebar
 app.set('view engine', 'hbs')
 
-app.use(methodOverride('_method'))
+app.use(session({
+  secret: 'ThisIsMySecret',
+  resave: false,
+  saveUninitialized: true
+}))
 
+app.use(methodOverride('_method'))
 app.use(routes)
 
 const router = require('./routes')
