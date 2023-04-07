@@ -5,6 +5,9 @@ const exphbs = require('express-handlebars')
 //載入method-override
 const methodOverride = require('method-override')
 const session = require('express-session')
+const usePassport= require('./config/passport')
+
+const router = require('./routes')
 
 //request body parser
 app.use(express.urlencoded({ extended: true }))
@@ -30,10 +33,11 @@ app.use(session({
   saveUninitialized: true
 }))
 
+usePassport(app)
+
 app.use(methodOverride('_method'))
 app.use(routes)
 
-const router = require('./routes')
 
 app.listen(port, () => {
   console.log(`Server is listening on http://locallhost:${port}`)
