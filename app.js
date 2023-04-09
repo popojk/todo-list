@@ -21,14 +21,13 @@ if (process.env.NODE_ENV !== 'production') {
 //只要連線有被執行就好不需要回傳值，所以不用設定變數
 require('./config/mongoose')
 
-const port = 3000
 //載入Todo model
 const Todo = require('./models/todo')
 //告訴express要使用的view engine 是 handlebar
 app.set('view engine', 'hbs')
 
 app.use(session({
-  secret: 'ThisIsMySecret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }))
@@ -46,7 +45,6 @@ app.use((req, res, next) => {
 app.use(methodOverride('_method'))
 app.use(routes)
 
-
-app.listen(port, () => {
-  console.log(`Server is listening on http://locallhost:${port}`)
+app.listen(process.env.PORT, () => {
+  console.log(`Server is listening on http://locallhost:${process.env.PORT}`)
 })
